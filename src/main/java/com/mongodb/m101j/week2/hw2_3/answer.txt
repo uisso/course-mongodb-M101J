@@ -1,0 +1,2 @@
+db.grades.aggregate({'$group':{'_id':'$student_id', 'average':{$avg:'$score'}}}, {'$sort':{'average':-1}}, {'$limit':1})
+{ "_id" : 54, "average" : 96.19488173037341 }
