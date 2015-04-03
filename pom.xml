@@ -5,7 +5,7 @@
 	<groupId>com.mongodb</groupId>
 	<artifactId>course.M101J</artifactId>
 	<version>1.0-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 
 	<name>M101J</name>
 	<url>http://maven.apache.org</url>
@@ -44,6 +44,18 @@
 			<artifactId>freemarker</artifactId>
 			<version>${version.freemarker}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.7</version>
+		</dependency>		
 
 		<dependency>
 			<groupId>junit</groupId>
@@ -77,4 +89,10 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<modules>
+		<module>M101J-class</module>
+		<module>M101J-week2.blog.hw2.4</module>
+		<module>M101J-week3.blog.hw3.2_3</module>
+	</modules>
 </project>
