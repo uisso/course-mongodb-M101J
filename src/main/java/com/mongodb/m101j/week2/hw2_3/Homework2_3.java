@@ -1,5 +1,5 @@
-/* Allkea Solutions
- * Copyright (c) 2015, allkea.com
+/* Mongodb course - M101J
+ * Copyright (c) 2015
  */
 package com.mongodb.m101j.week2.hw2_3;
 

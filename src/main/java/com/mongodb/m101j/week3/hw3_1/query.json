@@ -1,0 +1,8 @@
+db.students.aggregate({$unwind:'$scores'}, {$match:{'scores.type':'homework'}}, {$sort:{'_id':1, 'scores.score':-1}} ).pretty()
+
+db.students.aggregate(
+{ '$unwind': '$scores'},
+{ '$group': { _id : {'id':'$_id', 'name': '$name', 'type': '$scores.type', 'score': '$scores.score'} } },
+{ '$match': { '_id.type': 'homework'}},
+{ '$sort': { '_id.id':1, '_id.score':1}}
+).pretty()
