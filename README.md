@@ -1,6 +1,8 @@
 M101J: MongoDB for Java Developers
 ===============================
 
+[![Join the chat at https://gitter.im/uisso/course-mongodb-M101J](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/uisso/course-mongodb-M101J?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Exercises
 ------------
 Maven module:  M101J-class 
