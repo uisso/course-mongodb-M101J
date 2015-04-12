@@ -5,7 +5,7 @@ M101J: MongoDB for Java Developers
 
 ---
 
-# You can check the notes by week:
+# You can check the notes by weeks:
 * [week 1](https://github.com/uisso/course-mongodb-M101J/blob/master/notes/week1.md)
 * [week 2](https://github.com/uisso/course-mongodb-M101J/blob/master/notes/week2.md)
 * [week 3](https://github.com/uisso/course-mongodb-M101J/blob/master/notes/week3.md)
