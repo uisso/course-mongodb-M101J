@@ -3,6 +3,19 @@ M101J: MongoDB for Java Developers
 
 [![Join the chat at https://gitter.im/uisso/course-mongodb-M101J](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/uisso/course-mongodb-M101J?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+---
+
+# You can check the notes by week:
+* [week 1](https://github.com/uisso/course-mongodb-M101J/notes/week1.md)
+* [week 2](https://github.com/uisso/course-mongodb-M101J/notes/week2.md)
+* [week 3](https://github.com/uisso/course-mongodb-M101J/notes/week3.md)
+* [week 4](https://github.com/uisso/course-mongodb-M101J/notes/week4.md)
+* [week 5](https://github.com/uisso/course-mongodb-M101J/notes/week5.md)
+* [week 6](https://github.com/uisso/course-mongodb-M101J/notes/week6.md)
+* [week 7](https://github.com/uisso/course-mongodb-M101J/notes/week7.md)
+
+---
+
 Exercises
 ------------
 Maven module:  M101J-class 
@@ -29,12 +42,15 @@ Maven module: M101J-week3.blog.hw3.2_3
  * homework 3.2: blog project
  * homework 3.3: blog project
   
-Week 4
+Week 4 (done)
 ----------------
+
 Week 5
 ----------------
+
 Week 6
 ----------------
+
 Final Exam
 ---------------
 
