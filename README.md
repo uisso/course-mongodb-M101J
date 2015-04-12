@@ -6,13 +6,13 @@ M101J: MongoDB for Java Developers
 ---
 
 # You can check the notes by week:
-* [week 1](https://github.com/uisso/course-mongodb-M101J/notes/week1.md)
-* [week 2](https://github.com/uisso/course-mongodb-M101J/notes/week2.md)
-* [week 3](https://github.com/uisso/course-mongodb-M101J/notes/week3.md)
-* [week 4](https://github.com/uisso/course-mongodb-M101J/notes/week4.md)
-* [week 5](https://github.com/uisso/course-mongodb-M101J/notes/week5.md)
-* [week 6](https://github.com/uisso/course-mongodb-M101J/notes/week6.md)
-* [week 7](https://github.com/uisso/course-mongodb-M101J/notes/week7.md)
+* [week 1](https://github.com/uisso/course-mongodb-M101J/blob/master/notes/week1.md)
+* [week 2](https://github.com/uisso/course-mongodb-M101J/blob/master/notes/week2.md)
+* [week 3](https://github.com/uisso/course-mongodb-M101J/blob/master/notes/week3.md)
+* [week 4](https://github.com/uisso/course-mongodb-M101J/blob/master/notes/week4.md)
+* [week 5](https://github.com/uisso/course-mongodb-M101J/blob/master/notes/week5.md)
+* [week 6](https://github.com/uisso/course-mongodb-M101J/blob/master/notes/week6.md)
+* [week 7](https://github.com/uisso/course-mongodb-M101J/blob/master/notes/week7.md)
 
 ---
 
