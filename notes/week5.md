@@ -56,23 +56,120 @@ db.products.aggregate([{
 * Each stage can exist more than once in a pipeline
 
 
-## Simple Example Expanded 
-[Lecture Video]()
+## Simple Example Explained 
+[Lecture Video](https://www.youtube.com/watch?v=3lEpnMcfpCs)
+
+Quiz:
+```js
+db.stuff.find()
+{ "_id" : ObjectId("50b26f9d80a78af03b5163c8"), "a" : 1, "b" : 1, "c" : 1 }
+{ "_id" : ObjectId("50b26fb480a78af03b5163c9"), "a" : 2, "b" : 2, "c" : 1 }
+{ "_id" : ObjectId("50b26fbf80a78af03b5163ca"), "a" : 3, "b" : 3, "c" : 1 }
+{ "_id" : ObjectId("50b26fcd80a78af03b5163cb"), "a" : 3, "b" : 3, "c" : 2 }
+{ "_id" : ObjectId("50b26fd380a78af03b5163cc"), "a" : 3, "b" : 5, "c" : 3 }
+
+db.stuff.aggregate([{$group:{_id:'$c'}}])
+```
+How many documents will be in the result set from aggregate?
+* 3
 
 ## Compound Grouping 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=qTbtax_cKcc)
+
+```sql
+select manufacturer, category, count(*) from products group by manufacturer, category.
+``` 
+
+* Use a compound id with manufacturer and category
+```js
+db.products.aggregate([{
+  "$group":{
+        "_id":{                     //create new key or _id for each doc 
+           "maker":"$manufacturer"
+           "category":"$category"
+        },
+        "num_products":{"$sum":1}
+  }
+}])
+```
 
 ## Using a document for _id 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=zoN4cj_XQzY)
 
 ## Aggregation Expressions 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=L4G14MTfTgQ)
+
+These are the expression that you can use aggregation grouping stage of the pipeline [$group] :
+* $sun : add one to a key (mySum: {$sum:1}) or sum up keys (sum_prices:{$sum:”$price”})
+* $avg, $min, $max : average, minimum or maximum value of a key
+* $push : build the arrays
+* $addToSet : build the arrays, no duplicate a element - uniquely
+* $first : only useful after a sort
+* $last : only useful after a sort
 
 ## Using $sum 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=93MSz3uDC1A)
+
+```js
+db.products.aggregate([  
+   {  
+      "$group":{  
+         "_id":{  
+            "maker":"$manufacturer"
+         },
+         "sum_prices":{  
+            "$sum":"$prices"
+         }
+      }
+   }
+])
+```
+
+Quiz:
+```js
+db.zips.aggregate([  
+   {  
+      "$group":{  
+         "_id":"$state",
+         "population":{  
+            $sum:"$pop"
+         }
+      }
+   }
+])
+
+```
 
 ## Using $avg 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=baIDZ-M5j7w)
+
+```js
+db.products.aggregate([  
+   {  
+      "$group":{  
+         "_id":{  
+            "category":"$category"
+         },
+         "avg_prices":{  
+            "$avg":"$prices"
+         }
+      }
+   }
+])
+```
+Quiz:
+```js
+db.zips.aggregate([
+        {$group:
+         {
+    	 _id: {
+           "state":"$state", "zip":"$zip"
+    	 },
+    	 avg_pop:{$avg:"$pop"}
+         }
+        }
+    ])
+```
 
 ## Using $addToSet 
 [Lecture Video]()
