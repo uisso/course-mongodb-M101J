@@ -269,25 +269,278 @@ db.grades.aggregate([
 ```
 
 ## Using $project 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=TbQ2PI5Fib0)
+
+It's a [1:1] stage of the pipeline, so for every document that comes into the project phase, one document will leave the project phase.
+
+You can do things like:
+* remove a key: if you don't mention a key, it is not included, except for _id, which must be explicitly suppressed {$project: {_id: 0, ...
+* add a new key: also possible to create new subdocuments
+* reshape the keys: you could take a key and decide to put it into a subdocument with another key.
+* keep keys: {$project: {myKey: 1, ...
+* rename keys / use functions: $toUpper, $toLower, $add, $multiply
+
+Simple function of keys:
+* $toUpper
+* $toLower
+* $add : add something to the value
+* $multiply : multiply by number
+
+```js
+db.products.aggregate([
+    {$project:
+     {
+	 _id:0,
+	 'maker': {$toLower:"$manufacturer"},
+	 'details': {'category': "$category",
+		     'price' : {"$multiply":["$price",10]}
+		    },
+	 'item':'$name'
+     }
+    }
+])
+```
+
+Quiz:
+```js
+db.zips.aggregate([
+    {$project:
+     {
+     _id:0,                      //remove _id
+     'city': {$toLower:"$city"},
+     'pop':1,                    //show pop
+     'state':1,                  //show state
+     'zip':'$_id'                //ref _id
+     }
+    }
+])
+```
 
 ## Using $match 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=7RtHG90Hrbw)
+
+$match phase performs a filtering which is an [n:1] operation.
+Match will go through each document and see if the document matches your criteria.
+
+There are two reasons why you might want to match.
+* pre agg filter
+* filter the results
+
+```js
+db.zips.aggregate([
+    {$match:
+     {
+	 state:"CA"
+     }
+    },
+    {$group:
+     {
+	 _id: "$city",
+	 population: {$sum:"$pop"},
+	 zip_codes: {$addToSet: "$_id"}
+     }
+    },
+    {$project: //reshape the doc above grouped and matched doc
+     {
+	 _id: 0,
+	 city: "$_id",
+	 population: 1,
+	 zip_codes:1
+     }
+    }
+])
+```
+
+One thing to note about $match (and $sort) is that they can use indexes, but only if done at the beginning of the aggregation pipeline.
+
+You can read the documentation [here](http://docs.mongodb.org/manual/core/aggregation-pipeline).
+
+Quiz:
+```js
+db.zips.aggregate([
+    {$match:
+     {
+	 pop: {$gt:100000}
+     }
+    }
+])
+```
 
 ## Using $sort 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=HUEtV7omSb8)
+
+$sort supports both disk and memory bases sorting.
+* by default the agg framework will try to sort in memory.
+* there is a limit of 100MB for any given pipeline stage
+
+before or after the grouping stage (there are some good reasons!)
+
+```js
+db.zips.aggregate([
+    {$match:
+     {
+	 state:"NY"
+     }
+    },
+    {$group:
+     {
+	 _id: "$city",
+	 population: {$sum:"$pop"},
+     }
+    },
+    {$project:
+     {
+	 _id: 0,
+	 city: "$_id",
+	 population: 1,
+     }
+    },
+    {$sort:
+     {
+	 population:-1
+     }
+    }
+])
+```
+
+Quiz:
+```js
+db.zips.aggregate([
+    {$sort:
+     {
+	 state:1, city:1
+     }
+    }
+])
+```
 
 ## Using $limit and $skip 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=o5hzYKXUyrU)
+
+So it doesn't make any sense to skip and limit, unless you first sort.
+First $skip – then $limit (order of the stages in the pipeline matter)
+
+```js
+db.zips.aggregate([
+    {$match:
+     {
+	 state:"NY"
+     }
+    },
+    {$group:
+     {
+	 _id: "$city",
+	 population: {$sum:"$pop"},
+     }
+    },
+    {$project:
+     {
+	 _id: 0,
+	 city: "$_id",
+	 population: 1,
+     }
+    },
+    {$sort:
+     {
+	 population:-1
+     }
+    },
+    {$skip: 10},
+    {$limit: 5}
+])
+```
 
 ## Revisiting $first and $last 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=JOdAnxVAMwc)
+
+$first and $last are group operators.
+
+```js
+db.zips.aggregate([
+    /* get the population of every city in every state */
+    {$group:
+     {
+	 _id: {state:"$state", city:"$city"},
+	 population: {$sum:"$pop"},
+     }
+    },
+     /* sort by state, population */
+    {$sort: 
+     {"_id.state":1, "population":-1}
+    },
+    /* group by state, get the first item in each group */
+    {$group: 
+     {
+	 _id:"$_id.state",
+	 city: {$first: "$_id.city"},
+	 population: {$first:"$population"}
+     }
+    },
+    /* now sort by state again */
+    {$sort:
+     {"_id":1}
+    }
+])
+```
 
 ## Using $unwind 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=E4aYOQPeQvI)
+
+```js
+use agg;
+db.items.drop();
+db.items.insert({_id:'nail', 'attributes':['hard', 'shiny', 'pointy', 'thin']});
+db.items.insert({_id:'hammer', 'attributes':['heavy', 'black', 'blunt']});
+db.items.insert({_id:'screwdriver', 'attributes':['long', 'black', 'flat']});
+db.items.insert({_id:'rock', 'attributes':['heavy', 'rough', 'roundish']});
+db.items.aggregate([{$unwind:"$attributes"}]);
+
+{ "_id" : "nail", "attributes" : "hard" }
+{ "_id" : "nail", "attributes" : "shiny" }
+{ "_id" : "nail", "attributes" : "pointy" }
+{ "_id" : "nail", "attributes" : "thin" }
+{ "_id" : "hammer", "attributes" : "heavy" }
+{ "_id" : "hammer", "attributes" : "black" }
+{ "_id" : "hammer", "attributes" : "blunt" }
+{ "_id" : "screwdriver", "attributes" : "long" }
+{ "_id" : "screwdriver", "attributes" : "black" }
+{ "_id" : "screwdriver", "attributes" : "flat" }
+{ "_id" : "rock", "attributes" : "heavy" }
+{ "_id" : "rock", "attributes" : "rough" }
+{ "_id" : "rock", "attributes" : "roundish" }
+
+```
 
 ## $unwind example 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=U_4Enh2TTp4)
+
+```js
+use blog;
+db.posts.aggregate([
+    /* unwind by tags */
+    {"$unwind":"$tags"},
+    /* now group by tags, counting each tag */
+    {"$group": 
+     {"_id":"$tags",
+      "count":{$sum:1}
+     }
+    },
+    /* sort by popularity */
+    {"$sort":{"count":-1}},
+    /* show me the top 10 */
+    {"$limit": 10},
+    /* change the name of _id to be tag */
+    {"$project":
+     {_id:0,
+      'tag':'$_id',
+      'count' : 1
+     }
+    }
+])
+```
+Quiz:
+Reverse the effects of an unwind?
+ $push
 
 ## Double $unwind 
 [Lecture Video]()
