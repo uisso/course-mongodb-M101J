@@ -117,9 +117,7 @@ db.products.aggregate([
          "_id":{  
             "maker":"$manufacturer"
          },
-         "sum_prices":{  
-            "$sum":"$prices"
-         }
+         "sum_prices":{ "$sum":"$prices" }
       }
    }
 ])
@@ -131,9 +129,7 @@ db.zips.aggregate([
    {  
       "$group":{  
          "_id":"$state",
-         "population":{  
-            $sum:"$pop"
-         }
+         "population":{ $sum:"$pop" }
       }
    }
 ])
@@ -150,9 +146,7 @@ db.products.aggregate([
          "_id":{  
             "category":"$category"
          },
-         "avg_prices":{  
-            "$avg":"$prices"
-         }
+         "avg_prices":{ "$avg":"$prices" }
       }
    }
 ])
@@ -172,16 +166,107 @@ db.zips.aggregate([
 ```
 
 ## Using $addToSet 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=YzURaZnKI9s)
+
+* Create arrays for each doc
+* $addToSet adds it only if it's not already there.
+
+```js
+db.products.aggregate([  
+   {  
+      "$group":{  
+         "_id":{  
+            "maker":"$manufacturer"
+         },
+         "categories":{ "$addToSet":"$category" }
+      }
+   }
+])
+```
+Quiz:
+```js
+db.zips.aggregate([  
+   {  
+      "$group":{  
+         "_id":"$city",
+         "postal_codes":{ "$addToSet":"$_id" }
+      }
+   }
+])
+```
 
 ## Using $push 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=LQcBM-g0ACY)
+
+$push is very similar to $addToSet, except that $push does not guarantee that it adds each item only once. It doesn't look through to make sure it's not already there.
+
+```js
+db.products.aggregate([  
+   {  
+      "$group":{  
+         "_id":{  
+            "maker":"$manufacturer"
+         },
+         "categories":{ "$push":"$category" }
+      }
+   }
+])
+```
 
 ## Using $max and $min 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=BYoNX4trjOQ)
+
+```js
+db.products.aggregate([  
+   {  
+      "$group":{  
+         "_id":{  
+            "maker":"$manufacturer"
+         },
+         "maxprice":{ "$max":"$price" }
+      }
+   }
+])
+```
+
+Quiz:
+```js
+db.zips.aggregate([  
+   {  
+      "$group":{  
+         "_id":"$state",
+         "pop":{ "$max":"$pop" }
+      }
+   }
+])
+```
 
 ## Double $group stages 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=EIWF9Oxeb8M)
+
+```js
+db.grades.aggregate([  
+   {  
+      '$group':{  
+         _id:{  
+            class_id:"$class_id",
+            student_id:"$student_id"
+         },
+         'average':{  
+            "$avg":"$score"
+         }
+      }
+   },//grouping one
+   {  
+      '$group':{  
+         _id:"$_id.class_id",
+         'average':{  
+            "$avg":"$average"
+         }
+      }
+   } //grouping two from previous $group stage 
+])
+```
 
 ## Using $project 
 [Lecture Video]()
