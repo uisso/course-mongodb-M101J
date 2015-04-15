@@ -48,10 +48,10 @@ db.products.aggregate([{
 	* $limit: limits returned docs (in: n / out: n-x)
 	* $unwind: explodes arrays - Produces a doc for each value in an array-key-field with everything else repeated (in: n / out: n+x)
 	
-* Stages:
-	* out: allow put docs to another collection (in: 1 / out: 1)
-	* redact:
-	* geonear: limit doc by the pipeline stage based on location
+* Stages (plus operators):
+	* $out: allow put docs to another collection (in: 1 / out: 1)
+	* $redact:
+	* $geonear: limit doc by the pipeline stage based on location
 
 * Each stage can exist more than once in a pipeline
 
