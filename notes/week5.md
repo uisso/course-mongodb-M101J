@@ -33,13 +33,13 @@ db.products.aggregate([{
 }])
 ```
 
-## The Aggregation Pipeline 
+## The Aggregation Pipeline
 [Lecture Video](https://www.youtube.com/watch?v=AuO8CEkTG6Y)
 
 * Each document in the array parameter to the aggregate function is a stage in the pipeline
 * pipeline stages from collection to results: collection -> `$project` -> `$match` ->  `$group` -> `$sort` -> result
 
-* Stages (main operators): 
+* Stages (main operators):
 	* `$project` select relevant fields and reshape doc `in: 1 / out: 1`
 	* `$match` filters docs; `in: n / out: n-x`
 	* `$group` aggregates; Reduces the number of docs `in: n / out: n-x`
