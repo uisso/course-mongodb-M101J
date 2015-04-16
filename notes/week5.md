@@ -650,7 +650,21 @@ db.inventory.aggregate([
 ```
 
 ## Mapping between SQL and Aggregation 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=auL2R0XKlyM)
+
+[SQL to Aggregation Mapping Chart](http://docs.mongodb.org/manual/reference/sql-aggregation-comparison/)
+
+| SQL      | MongoDB                                                                                                                                                 |
+|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| WHERE    | $match                                                                                                                                                  |
+| GROUP BY | $group                                                                                                                                                  |
+| HAVING   | $match                                                                                                                                                  |
+| SELECT   | $project                                                                                                                                                |
+| ORDER BY | $sort                                                                                                                                                   |
+| LIMIT    | $limit                                                                                                                                                  |
+| SUM()    | $sum                                                                                                                                                    |
+| COUNT    | $sum                                                                                                                                                    |
+| JOIN     | No direct corresponding operator; however, the $unwindoperator allows for somewhat similar functionality, but with fields embedded within the document. |
 
 ## Some Common SQL examples 
 [Lecture Video]()
