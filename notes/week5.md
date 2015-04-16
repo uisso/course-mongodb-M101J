@@ -667,10 +667,29 @@ db.inventory.aggregate([
 | JOIN     | No direct corresponding operator; however, the $unwindoperator allows for somewhat similar functionality, but with fields embedded within the document. |
 
 ## Some Common SQL examples 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=ep2gLSR6C0U)
+
+[SQL to Aggregation Mapping - Examples](http://docs.mongodb.org/manual/reference/sql-aggregation-comparison/#examples)
 
 ## Limitations of the Aggregation Framework 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=U_gRSxEq3c0)
+
+* by default, 100MB limit for pipeline stages
+	* by allowDiskUse option, get around that 100MB limit
+* to return the results in one document can only be a 16MB limit (by default in python)
+	* easy way around this one, set cursor equal to empty document `cursor = {}` and you can have aggregation result that have no limit.
+* in sharded environment:
+	* `group by` or a `sort` or anything that requires looking at all the data, then will be brought back to the first shard from multiple shards.
+
+
+Alternatives to aggregation framework:
+* map-redude built from hadoop: hadoop connector 
+* map-reduce built from mongodb: don't recommended
+
+Tips:
+Projection or a match, could go in parallel with all the shards.
 
 ## Aggregation Framework with the Java Driver 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=8NT0-2ZvMkg)
+
+[Examples](http://docs.mongodb.org/manual/tutorial/aggregation-zip-code-data-set/)
