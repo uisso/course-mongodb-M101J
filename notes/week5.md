@@ -100,7 +100,7 @@ db.products.aggregate([{
 [Lecture Video](https://www.youtube.com/watch?v=L4G14MTfTgQ)
 
 These are the expression that you can use aggregation grouping stage of the pipeline [$group] :
-* `$sun` add one to a key (mySum: {$sum:1}) or sum up keys (sum_prices:{$sum:”$price”})
+* `$sun` add one to a key `mySum: {$sum:1}` or sum up keys `sum_prices:{$sum:”$price”}`
 * `$avg`, `$min`, `$max` average, minimum or maximum value of a key
 * `$push` build the arrays
 * `$addToSet` build the arrays, no duplicate a element - uniquely
