@@ -543,7 +543,111 @@ Reverse the effects of an unwind?
  $push
 
 ## Double $unwind 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=YXGL27217B8)
+
+And therefore create a Cartesian product of the two arrays as well as the rest of the document.
+
+```js
+use agg;
+db.inventory.drop();
+db.inventory.insert({'name':"Polo Shirt", 'sizes':["Small", "Medium", "Large"], 'colors':['navy', 'white', 'orange', 'red']})
+db.inventory.insert({'name':"T-Shirt", 'sizes':["Small", "Medium", "Large", "X-Large"], 'colors':['navy', "black",  'orange', 'red']})
+db.inventory.insert({'name':"Chino Pants", 'sizes':["32x32", "31x30", "36x32"], 'colors':['navy', 'white', 'orange', 'violet']})
+```
+
+```js
+> db.inventory.find()
+{ "_id" : ObjectId("552ef5ecdf3c683c8c1fd66f"), "name" : "Polo Shirt", "sizes" : [ "Small", "Medium", "Large" ], "colors" : [ "navy", "white", "orange", "red" ] }
+{ "_id" : ObjectId("552ef5ecdf3c683c8c1fd670"), "name" : "T-Shirt", "sizes" : [ "Small", "Medium", "Large", "X-Large" ], "colors" : [ "navy", "black", "orange", "red" ] }
+{ "_id" : ObjectId("552ef5eddf3c683c8c1fd671"), "name" : "Chino Pants", "sizes" : [ "32x32", "31x30", "36x32" ], "colors" : [ "navy", "white", "orange", "violet" ] }
+```
+
+```js
+db.inventory.aggregate([
+    {$unwind: "$sizes"},
+    {$unwind: "$colors"},
+    {$group: 
+     {
+	'_id': {'size':'$sizes', 'color':'$colors'},
+	'count' : {'$sum':1}
+     }
+    }
+])
+{ "_id" : { "size" : "31x30", "color" : "orange" }, "count" : 1 }
+{ "_id" : { "size" : "Medium", "color" : "navy" }, "count" : 2 }
+{ "_id" : { "size" : "31x30", "color" : "navy" }, "count" : 1 }
+{ "_id" : { "size" : "32x32", "color" : "violet" }, "count" : 1 }
+{ "_id" : { "size" : "36x32", "color" : "navy" }, "count" : 1 }
+{ "_id" : { "size" : "32x32", "color" : "white" }, "count" : 1 }
+{ "_id" : { "size" : "32x32", "color" : "navy" }, "count" : 1 }
+{ "_id" : { "size" : "X-Large", "color" : "orange" }, "count" : 1 }
+{ "_id" : { "size" : "Medium", "color" : "red" }, "count" : 2 }
+{ "_id" : { "size" : "Large", "color" : "orange" }, "count" : 2 }
+{ "_id" : { "size" : "X-Large", "color" : "black" }, "count" : 1 }
+{ "_id" : { "size" : "X-Large", "color" : "navy" }, "count" : 1 }
+{ "_id" : { "size" : "Small", "color" : "black" }, "count" : 1 }
+{ "_id" : { "size" : "Large", "color" : "navy" }, "count" : 2 }
+{ "_id" : { "size" : "Medium", "color" : "black" }, "count" : 1 }
+{ "_id" : { "size" : "Small", "color" : "navy" }, "count" : 2 }
+{ "_id" : { "size" : "31x30", "color" : "white" }, "count" : 1 }
+{ "_id" : { "size" : "Large", "color" : "white" }, "count" : 1 }
+{ "_id" : { "size" : "Large", "color" : "red" }, "count" : 2 }
+{ "_id" : { "size" : "36x32", "color" : "orange" }, "count" : 1 }
+```
+
+Quiz:
+Can you reverse the effects of a double unwind (2 unwinds in a row) in our inventory collection (shown in the lesson ) with the $push operator?
+```js
+db.inventory.aggregate([
+    {$unwind: "$sizes"},
+    {$unwind: "$colors"},
+    /* create the color array */
+    {$group: 
+     {
+	'_id': {name:"$name",size:"$sizes"},
+	 'colors': {$push: "$colors"},
+     }
+    },
+    /* create the size array */
+    {$group: 
+     {
+	'_id': {'name':"$_id.name",
+		'colors' : "$colors"},
+	 'sizes': {$push: "$_id.size"}
+     }
+    },
+    /* reshape for beauty */
+    {$project: 
+     {
+	 _id:0,
+	 "name":"$_id.name",
+	 "sizes":1,
+	 "colors": "$_id.colors"
+     }
+    }
+])
+{ "sizes" : [ "Medium", "Large", "Small" ], "name" : "Polo Shirt", "colors" : [ "navy", "white", "orange", "red" ] }
+{ "sizes" : [ "Large", "X-Large", "Small", "Medium" ], "name" : "T-Shirt", "colors" : [ "navy", "black", "orange", "red" ] }
+{ "sizes" : [ "36x32", "31x30", "32x32" ], "name" : "Chino Pants", "colors" : [ "navy", "white", "orange", "violet" ] }
+```
+
+Simple grouping rerting with $addToSet
+```js
+db.inventory.aggregate([
+    {$unwind: "$sizes"},
+    {$unwind: "$colors"},
+    {$group: 
+     {
+	'_id': "$name",
+	 'sizes': {$addToSet: "$sizes"},
+	 'colors': {$addToSet: "$colors"},
+     }
+    }
+])
+{ "_id" : "Chino Pants", "sizes" : [ "36x32", "31x30", "32x32" ], "colors" : [ "violet", "white", "orange", "navy" ] }
+{ "_id" : "T-Shirt", "sizes" : [ "X-Large", "Large", "Medium", "Small" ], "colors" : [ "red", "black", "orange", "navy" ] }
+{ "_id" : "Polo Shirt", "sizes" : [ "Large", "Medium", "Small" ], "colors" : [ "red", "white", "orange", "navy" ] }
+```
 
 ## Mapping between SQL and Aggregation 
 [Lecture Video]()
