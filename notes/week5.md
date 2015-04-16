@@ -37,21 +37,21 @@ db.products.aggregate([{
 [Lecture Video](https://www.youtube.com/watch?v=AuO8CEkTG6Y)
 
 * Each document in the array parameter to the aggregate function is a stage in the pipeline
-* pipeline stages from collection to results: collection -> [$project] -> [$match] -> [$group] -> [$sort] -> result
+* pipeline stages from collection to results: collection -> `$project` -> `$match` ->  `$group` -> `$sort` -> result
 
-* Stages (main operators):
-	* $project: select relevant fields and reshape doc (in: 1 / out: 1)
-	* $match: filters docs; (in: n / out: n-x)
-	* $group: aggregates; Reduces the number of docs (in: n / out: n-x)
-	* $sort: sorts the docs (in: 1 / out: 1)
-	* $skip: skips docs (in: n / out: n-x)
-	* $limit: limits returned docs (in: n / out: n-x)
-	* $unwind: explodes arrays - Produces a doc for each value in an array-key-field with everything else repeated (in: n / out: n+x)
+* Stages (main operators): 
+	* `$project` select relevant fields and reshape doc `in: 1 / out: 1`
+	* `$match` filters docs; `in: n / out: n-x`
+	* `$group` aggregates; Reduces the number of docs `in: n / out: n-x`
+	* `$sort` sorts the docs `in: 1 / out: 1`
+	* `$skip` skips docs `in: n / out: n-x`
+	* `$limit` limits returned docs `in: n / out: n-x`
+	* `$unwind` explodes arrays - Produces a doc for each value in an array-key-field with everything else repeated `in: n / out: n+x`
 	
 * Stages (plus operators):
-	* $out: allow put docs to another collection (in: 1 / out: 1)
-	* $redact:
-	* $geonear: limit doc by the pipeline stage based on location
+	* `$out` allow put docs to another collection `in: 1 / out: 1`
+	* `$redact`
+	* `$geonear` limit doc by the pipeline stage based on location
 
 * Each stage can exist more than once in a pipeline
 
@@ -100,12 +100,12 @@ db.products.aggregate([{
 [Lecture Video](https://www.youtube.com/watch?v=L4G14MTfTgQ)
 
 These are the expression that you can use aggregation grouping stage of the pipeline [$group] :
-* $sun : add one to a key (mySum: {$sum:1}) or sum up keys (sum_prices:{$sum:”$price”})
-* $avg, $min, $max : average, minimum or maximum value of a key
-* $push : build the arrays
-* $addToSet : build the arrays, no duplicate a element - uniquely
-* $first : only useful after a sort
-* $last : only useful after a sort
+* `$sun` add one to a key (mySum: {$sum:1}) or sum up keys (sum_prices:{$sum:”$price”})
+* `$avg`, `$min`, `$max` average, minimum or maximum value of a key
+* `$push` build the arrays
+* `$addToSet` build the arrays, no duplicate a element - uniquely
+* `$first` only useful after a sort
+* `$last` only useful after a sort
 
 ## Using $sum 
 [Lecture Video](https://www.youtube.com/watch?v=93MSz3uDC1A)
@@ -169,7 +169,7 @@ db.zips.aggregate([
 [Lecture Video](https://www.youtube.com/watch?v=YzURaZnKI9s)
 
 * Create arrays for each doc
-* $addToSet adds it only if it's not already there.
+* `$addToSet` adds it only if it's not already there.
 
 ```js
 db.products.aggregate([  
@@ -198,7 +198,7 @@ db.zips.aggregate([
 ## Using $push 
 [Lecture Video](https://www.youtube.com/watch?v=LQcBM-g0ACY)
 
-$push is very similar to $addToSet, except that $push does not guarantee that it adds each item only once. It doesn't look through to make sure it's not already there.
+`$push` is very similar to `$addToSet`, except that `$push` does not guarantee that it adds each item only once. It doesn't look through to make sure it's not already there.
 
 ```js
 db.products.aggregate([  
@@ -271,20 +271,20 @@ db.grades.aggregate([
 ## Using $project 
 [Lecture Video](https://www.youtube.com/watch?v=TbQ2PI5Fib0)
 
-It's a [1:1] stage of the pipeline, so for every document that comes into the project phase, one document will leave the project phase.
+It's a `1:1` stage of the pipeline, so for every document that comes into the project phase, one document will leave the project phase.
 
 You can do things like:
-* remove a key: if you don't mention a key, it is not included, except for _id, which must be explicitly suppressed {$project: {_id: 0, ...
+* remove a key: if you don't mention a key, it is not included, except for _id, which must be explicitly suppressed `{$project: {_id: 0, ...`
 * add a new key: also possible to create new subdocuments
 * reshape the keys: you could take a key and decide to put it into a subdocument with another key.
-* keep keys: {$project: {myKey: 1, ...
-* rename keys / use functions: $toUpper, $toLower, $add, $multiply
+* keep keys: `{$project: {myKey: 1, ...`
+* rename keys / use functions: `$toUpper`, `$toLower`, `$add`, `$multiply`
 
 Simple function of keys:
-* $toUpper
-* $toLower
-* $add : add something to the value
-* $multiply : multiply by number
+* `$toUpper`
+* `$toLower`
+* `$add` add something to the value
+* `$multiply` multiply by number
 
 ```js
 db.products.aggregate([
@@ -319,7 +319,7 @@ db.zips.aggregate([
 ## Using $match 
 [Lecture Video](https://www.youtube.com/watch?v=7RtHG90Hrbw)
 
-$match phase performs a filtering which is an [n:1] operation.
+`$match` phase performs a filtering which is an `n:1` operation.
 Match will go through each document and see if the document matches your criteria.
 
 There are two reasons why you might want to match.
@@ -351,7 +351,7 @@ db.zips.aggregate([
 ])
 ```
 
-One thing to note about $match (and $sort) is that they can use indexes, but only if done at the beginning of the aggregation pipeline.
+One thing to note about `$match` (and `$sort`) is that they can use indexes, but only if done at the beginning of the aggregation pipeline.
 
 You can read the documentation [here](http://docs.mongodb.org/manual/core/aggregation-pipeline).
 
@@ -369,7 +369,7 @@ db.zips.aggregate([
 ## Using $sort 
 [Lecture Video](https://www.youtube.com/watch?v=HUEtV7omSb8)
 
-$sort supports both disk and memory bases sorting.
+`$sort` supports both disk and memory bases sorting.
 * by default the agg framework will try to sort in memory.
 * there is a limit of 100MB for any given pipeline stage
 
@@ -418,7 +418,7 @@ db.zips.aggregate([
 [Lecture Video](https://www.youtube.com/watch?v=o5hzYKXUyrU)
 
 So it doesn't make any sense to skip and limit, unless you first sort.
-First $skip – then $limit (order of the stages in the pipeline matter)
+First `$skip` – then `$limit` (order of the stages in the pipeline matter)
 
 ```js
 db.zips.aggregate([
@@ -453,7 +453,7 @@ db.zips.aggregate([
 ## Revisiting $first and $last 
 [Lecture Video](https://www.youtube.com/watch?v=JOdAnxVAMwc)
 
-$first and $last are group operators.
+`$first` and `$last` are group operators.
 
 ```js
 db.zips.aggregate([
@@ -539,8 +539,8 @@ db.posts.aggregate([
 ])
 ```
 Quiz:
-Reverse the effects of an unwind?
- $push
+Reverse the effects of an `$unwind`?
+ `$push`
 
 ## Double $unwind 
 [Lecture Video](https://www.youtube.com/watch?v=YXGL27217B8)
@@ -596,7 +596,7 @@ db.inventory.aggregate([
 ```
 
 Quiz:
-Can you reverse the effects of a double unwind (2 unwinds in a row) in our inventory collection (shown in the lesson ) with the $push operator?
+Can you reverse the effects of a double `$unwind` (2 unwinds in a row) in our inventory collection (shown in the lesson ) with the `$push` operator?
 ```js
 db.inventory.aggregate([
     {$unwind: "$sizes"},
@@ -631,7 +631,7 @@ db.inventory.aggregate([
 { "sizes" : [ "36x32", "31x30", "32x32" ], "name" : "Chino Pants", "colors" : [ "navy", "white", "orange", "violet" ] }
 ```
 
-Simple grouping rerting with $addToSet
+Simple grouping reverting with `$addToSet`
 ```js
 db.inventory.aggregate([
     {$unwind: "$sizes"},
@@ -664,7 +664,7 @@ db.inventory.aggregate([
 | LIMIT    | $limit                                                                                                                                                  |
 | SUM()    | $sum                                                                                                                                                    |
 | COUNT    | $sum                                                                                                                                                    |
-| JOIN     | No direct corresponding operator; however, the $unwindoperator allows for somewhat similar functionality, but with fields embedded within the document. |
+| JOIN     | No direct corresponding operator; however, the `$unwind` operator allows for somewhat similar functionality, but with fields embedded within the document. |
 
 ## Some Common SQL examples 
 [Lecture Video](https://www.youtube.com/watch?v=ep2gLSR6C0U)
@@ -675,7 +675,7 @@ db.inventory.aggregate([
 [Lecture Video](https://www.youtube.com/watch?v=U_gRSxEq3c0)
 
 * by default, 100MB limit for pipeline stages
-	* by allowDiskUse option, get around that 100MB limit
+	* by `allowDiskUse` option, get around that 100MB limit
 * to return the results in one document can only be a 16MB limit (by default in python)
 	* easy way around this one, set cursor equal to empty document `cursor = {}` and you can have aggregation result that have no limit.
 * in sharded environment:
