@@ -1,6 +1,9 @@
 Week 4: Performance (HOMEWORKS)
 ===============================
 
+> If you see this before you get your homeworks!?
+> You are only being dishonest to yourself!
+
 ## HOMEWORK 4.4
 
 ```sh

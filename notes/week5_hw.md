@@ -1,6 +1,12 @@
 Week 5: Aggregation Framework (HOMEWORKS)
 =========================================
 
+
+> If you see this before you get your homeworks!?
+> You are only being dishonest to yourself!
+
+
+
 ## HOMEWORK 5.1 (HANDS ON)
 
 ```js
