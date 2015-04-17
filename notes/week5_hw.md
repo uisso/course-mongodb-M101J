@@ -1,7 +1,7 @@
 Week 5: Aggregation Framework (HOMEWORKS)
 =========================================
 
-# HOMEWORK 5.1 (HANDS ON)
+## HOMEWORK 5.1 (HANDS ON)
 
 ```js
 db.posts.aggregate([ 
@@ -12,7 +12,7 @@ db.posts.aggregate([
 ])
 ```
 
-# HOMEWORK 5.2 (HANDS ON)
+## HOMEWORK 5.2 (HANDS ON)
 
 ```js
 db.zips.aggregate([
@@ -23,7 +23,7 @@ db.zips.aggregate([
 ])
 ```
 
-# HOMEWORK 5.3 (HANDS ON)
+## HOMEWORK 5.3 (HANDS ON)
 
 ```js
 db.grades.aggregate([
@@ -35,7 +35,7 @@ db.grades.aggregate([
 ])
 ```
 
-# HOMEWORK 5.4
+## HOMEWORK 5.4
 
 ```js
 db.zips.aggregate([
