@@ -35,49 +35,69 @@ What are the reasons why an application may receive an error back even if the wr
 * The network fails between the time of the write and the time the client receives a response to the write.
 
 ## Introduction to Replication 
-[Lecture Video](https://www.youtube.com/watch?v=)
+[Lecture Video](https://www.youtube.com/watch?v=f1WTYGORU3w)
+
+* availability
+* fault tolerance
+---
+
+* You can only write to the primary node which replicates asynchronous to secondary nodes
+* If you only read from the primary you will have strong consistency (default behaviour)
+* You can allow your reads to go to secondaries - you might read stale data and have eventual consistency
+
+Quiz:
+What is the minimum original number of nodes needed to assure the election of a new Primary if a node goes down?
+* 3
 
 ## Replica Set Elections 
-[Lecture Video](https://www.youtube.com/watch?v=)
+[Lecture Video](https://www.youtube.com/watch?v=WFXSVHO78bQ)
+
+Type of replica set nodes:
+* `regular`: primary and secondary nodes, most normal type of node. `Can participate in elections`
+* `arbiter`: exist for `voting` purposes, e.g. if you have an even number of regular nodes it can ensure a majority in an election - Allows you to have only two regular nodes. `Can participate in elections`
+* `delayed/regular`: are disaster recovery nodes - Can be set to be whatever time behind the regular nodes. `It can't be elected to be a primary node`. (priority `p=0`) `Can’t participate in elections`
+* `hidden`: a node that is often used for analytics, `It can’t become the primary`. (priority `p=0`) `Can participate in elections`
+
+If the primary goes down the secondaries elect a new primary and the drivers will automatically connects to the new primary
 
 ## Write Consistency 
-[Lecture Video](https://www.youtube.com/watch?v=)
+[Lecture Video]()
 
 ## Creating a Replica Set 
-[Lecture Video](https://www.youtube.com/watch?v=)
+[Lecture Video]()
 
 ## Replica Set Internals 
-[Lecture Video](https://www.youtube.com/watch?v=)
+[Lecture Video]()
 
 ## Failover and Rollback 
-[Lecture Video](https://www.youtube.com/watch?v=)
+[Lecture Video]()
 
 ## Connecting to a Replica Set from the Java Driver 
-[Lecture Video](https://www.youtube.com/watch?v=)
+[Lecture Video]()
 
 ## When Bad Things Happen to Good Nodes 
-[Lecture Video](https://www.youtube.com/watch?v=)
+[Lecture Video]()
 
 ## Write Concern Revisited 
-[Lecture Video](https://www.youtube.com/watch?v=)
+[Lecture Video]()
 
 ## Read Preferences 
-[Lecture Video](https://www.youtube.com/watch?v=)
+[Lecture Video]()
 
 ## Review of Implications of Replication 
-[Lecture Video](https://www.youtube.com/watch?v=)
+[Lecture Video]()
 
 ## Introduction to Sharding 
-[Lecture Video](https://www.youtube.com/watch?v=)
+[Lecture Video]()
 
 ## Building a Sharded Environment 
-[Lecture Video](https://www.youtube.com/watch?v=)
+[Lecture Video]()
 
 ## Implications of Sharding 
-[Lecture Video](https://www.youtube.com/watch?v=)
+[Lecture Video]()
 
 ## Sharding + Replication 
-[Lecture Video](https://www.youtube.com/watch?v=)
+[Lecture Video]()
 
 ## Choosing a Shard Key
-[Lecture Video](https://www.youtube.com/watch?v=)
+[Lecture Video]()
