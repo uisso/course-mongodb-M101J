@@ -29,6 +29,7 @@ Important:
 [Lecture Video](https://www.youtube.com/watch?v=xWNzCkTCN-M)
 
 Quiz:
+
 What are the reasons why an application may receive an error back even if the write was successful.
 * The network TCP connection between the application and the server was reset after the server received a write but before a response could be sent.
 * The MongoDB server terminates between receiving the write and responding to it.
@@ -39,13 +40,9 @@ What are the reasons why an application may receive an error back even if the wr
 
 * availability
 * fault tolerance
----
-
-* You can only write to the primary node which replicates asynchronous to secondary nodes
-* If you only read from the primary you will have strong consistency (default behaviour)
-* You can allow your reads to go to secondaries - you might read stale data and have eventual consistency
 
 Quiz:
+
 What is the minimum original number of nodes needed to assure the election of a new Primary if a node goes down?
 * 3
 
@@ -61,19 +58,113 @@ Type of replica set nodes:
 If the primary goes down the secondaries elect a new primary and the drivers will automatically connects to the new primary
 
 ## Write Consistency 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=Oqf_Eza-s1M)
+
+* You can only write to the primary node which replicates asynchronous to secondary nodes
+* If you only read from the primary you will have strong consistency (default behaviour)
+* You can allow your reads to go to secondaries - you might read stale data and have eventual consistency
+* Eventual consistency means that eventually, you'll be able to read what you wrote, but there's no guarantee that you'll be able to read it in any particular time frame.
+
+Quiz:
+
+During the time when failover is occurring, can writes successfully complete?
+Yes
 
 ## Creating a Replica Set 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=flCFVFBRsKI)
+
+* Start a replication set: ```mongod -replSet m101 --logpath "1.log" --dbpath /data/rs1 --fork```
+
+create_replica_set.sh
+```sh
+#!/usr/bin/env bash
+
+mkdir -p /data/rs1 /data/rs2 /data/rs3
+mongod --replSet m101 --logpath "1.log" --dbpath /data/rs1 --port 27017 --oplogSize 64 --fork --smallfiles
+mongod --replSet m101 --logpath "2.log" --dbpath /data/rs2 --port 27018 --oplogSize 64 --smallfiles --fork
+mongod --replSet m101 --logpath "3.log" --dbpath /data/rs3 --port 27019 --oplogSize 64 --smallfiles --fork
+```
+* Register replica set nodes in the mongo shell:
+
+init_replica.js
+```javascript
+config = { _id: "m101", members:[
+          { _id : 0, host : "localhost:27017"},
+          { _id : 1, host : "localhost:27018"},
+          { _id : 2, host : "localhost:27019"} ]
+};
+
+rs.initiate(config);
+rs.status();
+```
+
+```sh
+mongo --port 27018
+...
+rs.initiate(config) // Initializes the replica set - can’t be executed on a node which can’t become primary
+rs.status()         // Gives you the status information about the replica set
+rs.slaveOk()        // If issued on a secondary node it allows you to read from this secondary node
+rs.isMaster()       // Tells you if you are the primary node
+rs.stepDown()       // Forces primary node to step down as a primary node
+```
 
 ## Replica Set Internals 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=6GbrJmxCEl0)
+
+* Replication is done via a capped collection called `oplog.rs` in the “local” database
+* Secondaries ask the primary for any items since a certain timestamp
+* That the secondaries are constantly reading the ```oplog``` of the primary. It's true that the oplog entries originally come from the primary, but secondaries can sync from another secondary, as long as at least there is a chain of oplog syncs that lead back to the primary.
+
+Quiz:
+
+Which of the following statements are true about replication. Check all that apply.
+* Replication supports mixed-mode storage engines. For examples, a `mmapv1` primary and  `wiredTiger` secondary.
+* A copy of the oplog is kept on both the primary and secondary servers.
+* The oplog is implemented as a capped collection.
 
 ## Failover and Rollback 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=IW1oW_Adlt0)
+
+* When the primary dies `failover` a secondary which becomes elected as a new primary which does not have the latest entries from the old primaries oplog
+* When the former primary node comes back up as a secondary node it will request the oplog data from the new primary and `rollback` the writes the current primary does not have and write them to a `rollback` file which can be applied manually
+* If the oplog of the new primary has looped during the time the old primary was down the entire dataset will be copied from the new primary
+* The risk of losing data due to a rollback can be avoided by waiting till the majority of the nodes have the data - set the write concern w=majority
+
+Notes:
+
+While it is true that a replica set will never `rollback` a write if it was performed with `w=majority` and that write successfully replicated to a majority of nodes, it is possible that a write performed with `w=majority` gets `rolled back`. Here is the scenario:
+* You do write with `w=majority` and a `failover` over occurs after the write has committed to the primary but before replication completes.
+* You will likely see an exception at the client. 
+* An election occurs and a new primary is elected. 
+* When the original primary comes back up, it will `rollback` the committed write. However, from your application's standpoint, that write never completed, so that's ok.
+
+Quiz:
+
+What happens if a node comes back up as a secondary after a period of being offline and the oplog has looped on the primary?
+The entire dataset will be copied from the primary.
 
 ## Connecting to a Replica Set from the Java Driver 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=701LZygtnK0)
+
+Provide a seed list to the MongoClient instance
+```java
+MongoClient client = new MongoClient(
+	Arrays.asList(
+		new ServerAddress(“localhost”, 27017),
+		new ServerAddress(“localhost”, 27018),
+		new ServerAddress(“localhost”, 27019),
+		...
+	)
+);
+```
+
+Will work even if the primary is not part of the seed list. The Java Client starts a background thread which
+pings all nodes from the seed list and all discovered nodes to find out which one is the primary
+
+Quiz:
+
+If you leave a replica set node out of the seedlist within the driver, what will happen?
+The missing node will be discovered as long as you list at least one valid node.
 
 ## When Bad Things Happen to Good Nodes 
 [Lecture Video]()
