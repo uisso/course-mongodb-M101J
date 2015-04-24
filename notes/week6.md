@@ -318,8 +318,83 @@ Quiz:
 If the shard key is not include in a find operation and there are 4 shards, each one a replica set with 3 nodes, how many nodes will see the find operation?
 * 4
 
+> The answer is 4. Since the `shard_key` is not included in the find operation, mongos has to send the query to all 4 of the shards. Each shard has 3 replica-set members, but only one member of each replica set (the primary, by default) is required to handle the find.
+
 ## Building a Sharded Environment 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=dn45G2yw20A)
+
+Set up two shards each a replica set of three mongod nodes:
+[init_sharded_env.sh](https://university.mongodb.com/static/10gen_2015_M101J_March/handouts/init_sharded_env.24825a3cb9f2.sh)
+
+* Set up shard as a replication set:
+```sh
+mongod --replSet s0 --logpath "s0-r0.log" --dbpath /data/shard0/rs0 --port 37017 --fork --shardsvr --smallfiles
+```
+
+* Set up config server:
+```sh
+mongod --logpath "cfg-a.log" --dbpath /data/config/config-a --port 57040 --fork --configsvr --smallfiles
+```
+
+* Set up mongos router with information about the config servers:
+	* `mongos` now listens on the standard port (default `mongod`port)
+```sh
+mongos --logpath "mongos-1.log" --configdb localhost:57040,localhost:57041,localhost:57042 --fork
+```
+
+* On the mongo shell – tell the config servers (via the mongos) about the shards:
+```sh
+db.adminCommand( { addshard : "s0/"+"localhost:37017" } );
+```
+
+* enable sharding on test DB
+```sh 
+db.adminCommand({enableSharding: "school"})
+```
+
+* shard collection `stundents` with the shard key `student_id`
+```sh
+db.adminCommand({shardCollection: "school.students", key: {student_id:1}});
+```
+
+* `sh.help()` - Will display all the shard commands available in the mongo shell, e.g. `sh.status()`
+
+
+create_scores3.js
+```javascript
+db=db.getSiblingDB("school");
+types = ['exam', 'quiz', 'homework', 'homework'];
+// 10,000 students
+for (i = 0; i < 10000; i++) {
+
+    // take 10 classes
+    for (class_counter = 0; class_counter < 10; class_counter ++) {
+	scores = []
+	    // and each class has 4 grades
+	    for (j = 0; j < 4; j++) {
+		scores.push({'type':types[j],'score':Math.random()*100});
+	    }
+
+	// there are 500 different classes that they can take
+	class_id = Math.floor(Math.random()*501); // get a class id between 0 and 500
+
+	record = {'student_id':i, 'scores':scores, 'class_id':class_id};
+	db.students.insert(record);
+
+    }
+
+}
+```
+
+Quiz:
+
+If you want to build a production system with two shards, each one a replica set with three nodes, how may mongod processes must you start?
+* 9
+
+> `six` from two replica sets, each one with three nodes in the replica set.
+> `two` to replica sets, each one with three nodes in the replica set.
+> `one` to config servers.
+
 
 ## Implications of Sharding 
 [Lecture Video]()
