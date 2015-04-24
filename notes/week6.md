@@ -447,12 +447,14 @@ You are building a facebook competitor called footbook that will be a mobile soc
 }
 ```
 
-* Choosing posttime as the shard key will cause hotspotting as time progresses.
+* `true` Choosing posttime as the shard key will cause hotspotting as time progresses.
 > The posttime will cause hotspotting because it's monotonically increasing.
-* Choosing username as the shard key will distribute posts to the wall well across the shards.
+
+* `true` Choosing username as the shard key will distribute posts to the wall well across the shards.
 > The username should be posts well across the shards.
-* Choosing visible_to as a shard key is illegal.
+
+* `true` Choosing visible_to as a shard key is illegal.
 > Because, it can index that is going to be on the shard or the starting part of the shard key and visible_to will acquire a multi-key index and that's illegal.
 
-- Choosing posttime as the shard key suffers from low cardinality.
+* `false` Choosing posttime as the shard key suffers from low cardinality.
 > Posttimes are going to be very varied, lots of different values. They are monotonically increasing. It's going to cause hotspotting on the inserts.
