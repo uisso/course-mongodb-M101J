@@ -68,7 +68,7 @@ If the primary goes down the secondaries elect a new primary and the drivers wil
 Quiz:
 
 During the time when failover is occurring, can writes successfully complete?
-Yes
+* Yes
 
 ## Creating a Replica Set 
 [Lecture Video](https://www.youtube.com/watch?v=flCFVFBRsKI)
@@ -140,7 +140,7 @@ Which of the following statements are true about replication. Check all that app
 Quiz:
 
 What happens if a node comes back up as a secondary after a period of being offline and the oplog has looped on the primary?
-The entire dataset will be copied from the primary.
+* The entire dataset will be copied from the primary.
 
 ## Connecting to a Replica Set from the Java Driver 
 [Lecture Video](https://www.youtube.com/watch?v=701LZygtnK0)
@@ -161,7 +161,7 @@ MongoClient client = new MongoClient(
 Quiz:
 
 If you leave a replica set node out of the seedlist within the driver, what will happen?
-The missing node will be discovered as long as you list at least one valid node.
+* The missing node will be discovered as long as you list at least one valid node.
 
 ## When Bad Things Happen to Good Nodes 
 [Lecture Video](https://www.youtube.com/watch?v=FyS8Rr6RacQ)
@@ -222,7 +222,7 @@ people.insert({"name":"Dwight Merriman", "favorite_color":"green"})
 
 Quis:
 If you set w=1 and j=1, is it possible to wind up rolling back a committed write to the primary on failover?
-`Yes`
+* Yes
 
 > The primary goes down before it propagates the right to the secondary
 > The secondary comes back, the secondary becomes primary.
@@ -278,7 +278,29 @@ You can configure your applications via the drivers to read from secondary nodes
 * If the secondary hardware has insufficient memory to keep the read working set in memory, directing reads to it will likely slow it down.
 
 ## Review of Implications of Replication 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=K5ISnvYKQFQ)
+
+* Seed lists:
+when you're using the drivers, which are primarily responsible for [INAUDIBLE] you to a new node during fail over, after a new primary is elected, drivers need to know about at least one member of the replica set.
+
+* Write concern: 
+We're in this distributed environment, waiting for some number of nodes to acknowledge your writes through the `w` parameter, the `j` parameter, which lets you wait or not wait for the `primary` node to commit that write to disk. 
+And also the `wtimeout` parameter, which is how long you're going to wait to see that your write replicated to other members of the `replica set`.
+
+* Read Preferences
+There's multiple nodes for you to potentially read from, you have to decide whether or not you want to read from your primary, which is the default, most obvious, and preferred thing to do, or whether you want to take your reads from your secondaries.
+And if you're going to take your read from your secondary, the application has to be ready to use data that's potentially stale with respect to what was written.
+
+* Errors can happen
+And these errors can happen because of:
+	* transient situations like `fail over` occurring 
+	* there are network errors that occur
+	* there's actually errors in terms of violating the unique key constraints, or other syntactic things.
+	
+Quiz:
+
+If you set w=4 on a connection and there are only three nodes in the replica set, how long will you wait in PyMongo for a response from an insert if you don't set a timeout?
+* More than five minutes
 
 ## Introduction to Sharding 
 [Lecture Video]()
