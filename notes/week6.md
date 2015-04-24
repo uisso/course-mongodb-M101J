@@ -295,7 +295,7 @@ And if you're going to take your read from your secondary, the application has t
 	
 Quiz:
 
-If you set w=4 on a connection and there are only three nodes in the replica set, how long will you wait in PyMongo for a response from an insert if you don't set a timeout?
+If you set `w=4` on a connection and there are only three nodes in the replica set, how long will you wait in PyMongo for a response from an insert if you don't set a timeout?
 * More than five minutes
 
 ## Introduction to Sharding 
@@ -397,7 +397,21 @@ If you want to build a production system with two shards, each one a replica set
 
 
 ## Implications of Sharding 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=ig278F60gRA)
+
+* Each document needs the `shard key`
+* The `shard key` is immutable
+* Needs an index on first element of the `shard key` (can be compound but not multi-key)
+* On an update you need to specify the `shard key` or `specify multi: true`
+* A find with no `shard key` will go to all shards (be expensive!)
+* The key used in most queries should be the `shard key`
+* You can’t have a unique index unless it is part of/starts with the `shard key`
+* `Write concerns` are still important in a sharded setup
+
+Quiz:
+
+Suppose you wanted to shard the zip code collection after importing it. You want to shard on zip code. What index would be required to allow MongoDB to shard on zip code?
+* An index on zip or a non-multi-key index that starts with zip.
 
 ## Sharding + Replication 
 [Lecture Video]()
