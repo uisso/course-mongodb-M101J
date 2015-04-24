@@ -231,7 +231,51 @@ If you set w=1 and j=1, is it possible to wind up rolling back a committed write
 > He'll put that into a file.
 
 ## Read Preferences 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=mhHaS4ZWzZE)
+
+By default, MongoDB reads and writes both go to the primary.
+
+Nevertheless, if you would like to read from secondaries, in MongoDB, we do allow that.
+
+`read preference` - you always have to write to the primary, but you can read from the secondaries. There are several different options for that:
+* `primary` - all reads are send to the primary; (default to guarantee strict consistency)
+* `primary preferred` - sends reads to primary or to a secondary if primary is down;
+	* `rs.slaveOk` - you're saying it's OK to send read to the secondary.
+* `secondary` - send reads to randomly selected secondaries, but not to the primary; (eventually consistent read)
+* `secondary preferred` - send reads to secondaries or to the primary if there's no secondary available;
+* `nearest` - send reads to returned nodes secondary or primary from results the closest in terms of ping time `15 milliseconds`.
+	* `tag set` - you can mark certain nodes as being part of a certain data center. If you're in New York, you want your reads to go to the New York data center.
+	
+```py
+import pymongo
+import time
+
+read_pref = pymongo.read_preferences.ReadPreference.SECONDARY
+
+c = pymongo.MongoClient(host=["mongodb://localhost:27017",
+                              "mongodb://localhost:27018",
+                              "mongodb://localhost:27019"],
+                              read_preference=read_pref)
+
+db = c.m101
+things = db.things
+
+for i in range(1000):
+    doc = things.find_one({'_id':i})
+    print "Found doc ", doc
+    time.sleep(.1)
+```
+
+`ReadPreference.SECONDARY` is still going to be robust within the face of the `AutoReconnect`.
+
+Pymongo API docs can be found [here](http://api.mongodb.org/python/current/api/pymongo).
+
+Quiz:
+
+You can configure your applications via the drivers to read from secondary nodes within a replica set. What are the reasons that you might not want to do that? Check all that apply.
+* If your write traffic is significantly greater than your read traffic, you may overwhelm the secondary, which must process all the writes as well as the reads. Replication lag can result.
+* You may not read what you previously wrote to MongoDB.
+* If the secondary hardware has insufficient memory to keep the read working set in memory, directing reads to it will likely slow it down.
 
 ## Review of Implications of Replication 
 [Lecture Video]()
