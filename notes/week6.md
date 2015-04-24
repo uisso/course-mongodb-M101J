@@ -219,8 +219,8 @@ people.insert({"name":"Dwight Merriman", "favorite_color":"green"})
 > Notes:
 > Write concern (w) value can be set at client, database or collection level within PyMongo. When you call MongoClient, you get a connection to the driver, but behind the scenes, PyMongo connects to multiple nodes of the replica set. The w value can be set at the client level. Andrew says that the w concern can be set at the connection level; he really means client level. It's also important to note that wtimeout is the amount of time that the database will wait for replication before returning an error on the driver, but that even if the database returns an error due to wtimeout, the write will not be unwound at the primary and may complete at the secondaries. Hence, writes that return errors to the client due to wtimeout may in fact succeed, but writes that return success, do in fact succeed. Finally, the video shows the use of an insert command in PyMongo. That call is deprecated and it should have been insert_one.
 
+Quiz:
 
-Quis:
 If you set w=1 and j=1, is it possible to wind up rolling back a committed write to the primary on failover?
 * Yes
 
@@ -280,19 +280,15 @@ You can configure your applications via the drivers to read from secondary nodes
 ## Review of Implications of Replication 
 [Lecture Video](https://www.youtube.com/watch?v=K5ISnvYKQFQ)
 
-* Seed lists:
-when you're using the drivers, which are primarily responsible for [INAUDIBLE] you to a new node during fail over, after a new primary is elected, drivers need to know about at least one member of the replica set.
+* `Seed lists`, when you're using the drivers, which are primarily responsible for [INAUDIBLE] you to a new node during fail over, after a new primary is elected, drivers need to know about at least one member of the replica set.
 
-* Write concern: 
-We're in this distributed environment, waiting for some number of nodes to acknowledge your writes through the `w` parameter, the `j` parameter, which lets you wait or not wait for the `primary` node to commit that write to disk. 
+* `Write concern`, we're in this distributed environment, waiting for some number of nodes to acknowledge your writes through the `w` parameter, the `j` parameter, which lets you wait or not wait for the `primary` node to commit that write to disk. 
 And also the `wtimeout` parameter, which is how long you're going to wait to see that your write replicated to other members of the `replica set`.
 
-* Read Preferences
-There's multiple nodes for you to potentially read from, you have to decide whether or not you want to read from your primary, which is the default, most obvious, and preferred thing to do, or whether you want to take your reads from your secondaries.
+* `Read Preferences`, there's multiple nodes for you to potentially read from, you have to decide whether or not you want to read from your primary, which is the default, most obvious, and preferred thing to do, or whether you want to take your reads from your secondaries.
 And if you're going to take your read from your secondary, the application has to be ready to use data that's potentially stale with respect to what was written.
 
-* Errors can happen
-And these errors can happen because of:
+* `Errors can happen`, because of:
 	* transient situations like `fail over` occurring 
 	* there are network errors that occur
 	* there's actually errors in terms of violating the unique key constraints, or other syntactic things.
@@ -303,7 +299,24 @@ If you set w=4 on a connection and there are only three nodes in the replica set
 * More than five minutes
 
 ## Introduction to Sharding 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=_GfDqa1qRl0)
+
+* Enables horizontal scalability
+* Shards are typically itself replica sets
+* `mongos` is the sharding router which distributes data to the individual shards
+* The application (and also the mongo shell) connects to `mongos` instead of `mongod`
+* There can be multiple mongos - mongos typically runs on the same server as the application
+* If a mongos goes down the application will connect to a different one – similar to replica sets
+* `shard_key` determines to which shard a document goes
+* Sharding is at database level – but you can define if you want to shared or not shard a specific collection
+* Config servers (which are mongod) keep track of where the shards are – in production you typically use 3 of them
+
+> At 2:55 I say that we use a range-based approach to distributing data across shards. That was right when this lecture was recorded but no longer. As of MongoDB 2.4, we also offer hash-based sharding, which offers a more even distribution of data as a function of shard key, at the expense of worse performance for range-based queries. For more information, see the documentation at [sharding-introduction](http://docs.mongodb.org/manual/core/sharding-introduction)
+
+Quiz:
+
+If the shard key is not include in a find operation and there are 4 shards, each one a replica set with 3 nodes, how many nodes will see the find operation?
+* 4
 
 ## Building a Sharded Environment 
 [Lecture Video]()
