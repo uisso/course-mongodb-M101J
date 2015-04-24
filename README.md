@@ -29,7 +29,7 @@ Maven module: M101J-week3.blog.hw3.2_3
 
 ### [week 5](https://github.com/uisso/course-mongodb-M101J/blob/master/notes/week5.md) `Done`
 
-### [week 6](https://github.com/uisso/course-mongodb-M101J/blob/master/notes/week6.md) ` `
+### [week 6](https://github.com/uisso/course-mongodb-M101J/blob/master/notes/week6.md) `Done`
 
 ### [week 7](https://github.com/uisso/course-mongodb-M101J/blob/master/notes/week7.md) - Final Exam ` `
 
