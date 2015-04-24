@@ -130,13 +130,12 @@ Which of the following statements are true about replication. Check all that app
 * If the oplog of the new primary has looped during the time the old primary was down the entire dataset will be copied from the new primary
 * The risk of losing data due to a rollback can be avoided by waiting till the majority of the nodes have the data - set the write concern w=majority
 
-Notes:
-
-While it is true that a replica set will never `rollback` a write if it was performed with `w=majority` and that write successfully replicated to a majority of nodes, it is possible that a write performed with `w=majority` gets `rolled back`. Here is the scenario:
-* You do write with `w=majority` and a `failover` over occurs after the write has committed to the primary but before replication completes.
-* You will likely see an exception at the client. 
-* An election occurs and a new primary is elected. 
-* When the original primary comes back up, it will `rollback` the committed write. However, from your application's standpoint, that write never completed, so that's ok.
+> Notes:
+>While it is true that a replica set will never `rollback` a write if it was performed with `w=majority` and that write successfully replicated to a majority of nodes, it is possible that a write performed with `w=majority` gets `rolled back`. Here is the scenario:
+> * You do write with `w=majority` and a `failover` over occurs after the write has committed to the primary but before replication completes.
+> * You will likely see an exception at the client. 
+> * An election occurs and a new primary is elected. 
+> * When the original primary comes back up, it will `rollback` the committed write. However, from your application's standpoint, that write never completed, so that's ok.
 
 Quiz:
 
@@ -158,8 +157,6 @@ MongoClient client = new MongoClient(
 );
 ```
 
-Will work even if the primary is not part of the seed list. The Java Client starts a background thread which
-pings all nodes from the seed list and all discovered nodes to find out which one is the primary
 
 Quiz:
 
@@ -167,10 +164,71 @@ If you leave a replica set node out of the seedlist within the driver, what will
 The missing node will be discovered as long as you list at least one valid node.
 
 ## When Bad Things Happen to Good Nodes 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=FyS8Rr6RacQ)
+
+Will work even if the primary is not part of the seed list. The Java Client starts a background thread which
+pings all nodes from the seed list and all discovered nodes to find out which one is the primary
+
+Handle exceptions with MongoException - `MongoSocketReadException`: Prematurely reached end of stream
+```java
+   ...
+   try{
+      collection.insertOne(...);
+   } catch (MongoException e){
+   }
+   ...
+```
+> Notes:
+> In this case, the insert is idempotent because it contains a specific _id, and that field has a unique index. Inserts > that don't involve a uniquely indexed field are not idempotent.
 
 ## Write Concern Revisited 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=5VyXyccjS3k)
+
+* `w` parameter determines how many nodes you wait for before you move on when you do an insert. And again, this is accomplished by calling `get last error` by the drivers with `w` set.
+* `w[n]` - will wait for `n` node to acknowledge the write.
+* `j=true` or `j=1` - will wait for the primary to write it all the way to disk. 
+* `wtimeout=milliseconds` - indicate how long you willing to wait for your writes to be acknowledge by the secondaries
+* `w`, `j` and `wtimeout`, collectively, are called write concern.
+* You can use it three different places:
+	* connection
+	* collection inside the drivers
+	* replica set
+* `w=majority` - is the one that will wait for the majority of the nodes to replicate. (It's is enough to avoid the rollback case.)
+
+```py
+import pymongo
+
+read_pref = pymongo.read_preferences.ReadPreference.SECONDARY
+
+c = pymongo.MongoClient(host="mongodb://localhost:27017",
+                        replicaSet="rs1",
+                        w=3, wtimeout=10000, j=True, 
+                        read_preference=read_pref)
+
+db = c.m101
+people = db.people
+
+print "inserting"
+people.insert({"name":"Andrew Erlichson", "favorite_color":"blue"})
+print "inserting"
+people.insert({"name":"Richard Krueter", "favorite_color":"red"})
+print "inserting"
+people.insert({"name":"Dwight Merriman", "favorite_color":"green"})
+```
+
+> Notes:
+> Write concern (w) value can be set at client, database or collection level within PyMongo. When you call MongoClient, you get a connection to the driver, but behind the scenes, PyMongo connects to multiple nodes of the replica set. The w value can be set at the client level. Andrew says that the w concern can be set at the connection level; he really means client level. It's also important to note that wtimeout is the amount of time that the database will wait for replication before returning an error on the driver, but that even if the database returns an error due to wtimeout, the write will not be unwound at the primary and may complete at the secondaries. Hence, writes that return errors to the client due to wtimeout may in fact succeed, but writes that return success, do in fact succeed. Finally, the video shows the use of an insert command in PyMongo. That call is deprecated and it should have been insert_one.
+
+
+Quis:
+If you set w=1 and j=1, is it possible to wind up rolling back a committed write to the primary on failover?
+`Yes`
+
+> The primary goes down before it propagates the right to the secondary
+> The secondary comes back, the secondary becomes primary.
+> Then when the original primary returns, he's going to roll himself back because he's a head of the other primary.
+> He's not going to send that one.
+> He'll put that into a file.
 
 ## Read Preferences 
 [Lecture Video]()
