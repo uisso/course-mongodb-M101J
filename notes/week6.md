@@ -395,7 +395,6 @@ If you want to build a production system with two shards, each one a replica set
 > `two` to replica sets, each one with three nodes in the replica set.
 > `one` to config servers.
 
-
 ## Implications of Sharding 
 [Lecture Video](https://www.youtube.com/watch?v=ig278F60gRA)
 
@@ -406,7 +405,6 @@ If you want to build a production system with two shards, each one a replica set
 * A find with no `shard key` will go to all shards (be expensive!)
 * The key used in most queries should be the `shard key`
 * You can’t have a unique index unless it is part of/starts with the `shard key`
-* `Write concerns` are still important in a sharded setup
 
 Quiz:
 
@@ -414,7 +412,24 @@ Suppose you wanted to shard the zip code collection after importing it. You want
 * An index on zip or a non-multi-key index that starts with zip.
 
 ## Sharding + Replication 
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=gkUCUbM0oEg)
+
+* Sharding and replication are almost always done together.
+* `mongos` can connect to members of the replica set.
+* `Write concerns` are still important in a sharded setup
+
+Quiz:
+
+Suppose you want to run multiple mongos routers for redundancy. What level of the stack will assure that you can failover to a different mongos from within your application?
+* drivers
+
+> because the drivers are what's attached mongos.
+> `mongos` go up and down, so they can't be the ones responsible for that.
+> `config servers` are in charge of figuring out where the chunks are for the sharding.
 
 ## Choosing a Shard Key
-[Lecture Video]()
+[Lecture Video](https://www.youtube.com/watch?v=8q2GB3QSBSI)
+
+Sufficient cardinality (variety of values)
+Avoid monotonically increasing keys to avoid hotspotting in writing (e.g. order_id, order_date)
+Compound sharding key is possible
