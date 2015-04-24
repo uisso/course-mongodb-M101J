@@ -430,6 +430,29 @@ Suppose you want to run multiple mongos routers for redundancy. What level of th
 ## Choosing a Shard Key
 [Lecture Video](https://www.youtube.com/watch?v=8q2GB3QSBSI)
 
-Sufficient cardinality (variety of values)
-Avoid monotonically increasing keys to avoid hotspotting in writing (e.g. order_id, order_date)
-Compound sharding key is possible
+* Sufficient cardinality (variety of values)
+* Avoid `monotonically increasing keys` to avoid `hotspotting` in writing (e.g. order_id, order_date)
+* Compound sharding key is possible
+
+Quiz:
+
+You are building a facebook competitor called footbook that will be a mobile social network of feet. You have decided that your primary data structure for posts to the wall will look like this:
+
+```javascript
+{
+     'username':'toeguy',
+     'posttime':ISODate("2012-12-02T23:12:23Z"),
+     "randomthought": "I am looking at my feet right now",
+     'visible_to':['friends','family', 'walkers']
+}
+```
+
+* Choosing posttime as the shard key will cause hotspotting as time progresses.
+> The posttime will cause hotspotting because it's monotonically increasing.
+* Choosing username as the shard key will distribute posts to the wall well across the shards.
+> The username should be posts well across the shards.
+* Choosing visible_to as a shard key is illegal.
+> Because, it can index that is going to be on the shard or the starting part of the shard key and visible_to will acquire a multi-key index and that's illegal.
+
+- Choosing posttime as the shard key suffers from low cardinality.
+> Posttimes are going to be very varied, lots of different values. They are monotonically increasing. It's going to cause hotspotting on the inserts.
